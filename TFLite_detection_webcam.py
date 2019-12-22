@@ -23,6 +23,13 @@ import time
 from threading import Thread
 import importlib.util
 
+# For reporting found objects
+from collections import Counter
+from reporter import Reporter
+influx_host = "157.230.98.123"
+influx_port = 8087
+rp = Reporter(influx_host, influx_port)
+
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
 class VideoStream:
@@ -186,6 +193,13 @@ while True:
     classes = interpreter.get_tensor(output_details[1]['index'])[0] # Class index of detected objects
     scores = interpreter.get_tensor(output_details[2]['index'])[0] # Confidence of detected objects
     #num = interpreter.get_tensor(output_details[3]['index'])[0]  # Total number of detected objects (inaccurate and not needed)
+
+    # Store counts of found objects
+    label_counts = Counter([labels[i] for i in classes[scores > min_conf_threshold].astype(int)])
+    list_of_records = [rp.make_record(key, label_counts[key]) for key in label_counts]
+    rp.write_influx(list_of_records)
+    #import pdb
+    #pdb.set_trace()
 
     # Loop over all detections and draw detection box if confidence is above minimum threshold
     for i in range(len(scores)):

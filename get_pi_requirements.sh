@@ -25,6 +25,13 @@ pip3 install tensorflow-2.0.0-cp37-none-linux_armv7l.whl
 rm tensorflow-2.0.0-cp37-none-linux_armv7l.whl
 fi
 
+# a hack for x64 debian
+if [ $version == "3.6" ]; then
+wget https://dl.google.com/coral/python/tflite_runtime-1.14.0-cp36-cp36m-linux_x86_64.whl
+pip3 install tflite_runtime-1.14.0-cp36-cp36m-linux_x86_64.whl
+rm tflite_runtime-1.14.0-cp36-cp36m-linux_x86_64.whl
+fi
+
 if [ $version == "3.5" ]; then
 wget https://dl.google.com/coral/python/tflite_runtime-1.14.0-cp35-cp35m-linux_armv7l.whl
 pip3 install tflite_runtime-1.14.0-cp35-cp35m-linux_armv7l.whl

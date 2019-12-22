@@ -153,6 +153,19 @@ for image_path in images:
     scores = interpreter.get_tensor(output_details[2]['index'])[0] # Confidence of detected objects
     #num = interpreter.get_tensor(output_details[3]['index'])[0]  # Total number of detected objects (inaccurate and not needed)
 
+
+    from collections import Counter
+    from reporter import Reporter
+    influx_host = "157.230.98.123"
+    influx_port = 8087
+    rp = Reporter(influx_host, influx_port)
+
+    label_counts = Counter([labels[i] for i in classes[scores > min_conf_threshold].astype(int)])
+    list_of_records = [rp.make_record(key, label_counts[key]) for key in label_counts]
+    rp.write_influx(list_of_records)
+    #import pdb
+    #pdb.set_trace()
+
     # Loop over all detections and draw detection box if confidence is above minimum threshold
     for i in range(len(scores)):
         if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0)):
