@@ -1,3 +1,4 @@
 venv_*
 Sample_TFLite_model*
 *.zip
+__pycache__
